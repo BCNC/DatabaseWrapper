@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/normalize.css') }}">
     
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dropdown.css') }}">
 
     
     
@@ -16,11 +17,6 @@
 
 <body>
     <div class="form">
-
-            <!-- <ul class="tab-group"> -->
-            <!-- <li class="tab active"><a href="#signup">Sign Up</a></li> -->
-            <!-- <li class="tab"><a href="#login">Log In</a></li> -->
-            <!-- </ul> -->
 
             <div class="tab-content">
             <div id="signup">   
@@ -51,12 +47,60 @@
                       <input type="email" name="inputEmail" id="inputEmail" class="form-control" required autocomplete="off"/>
                   </div>
 
- <!--                  <div class="field-wrap">
+                  <div class = "top-row">
+                    <div class="field-wrap">
                       <label>
-                          Set A Password<span class="req">*</span>
+                          Primary Major<span class="req">*</span>
                       </label>
-                      <input type="password" required autocomplete="off"/>
-                  </div> -->
+                      <input type="major" name="inputPMajor" id="inputPMajor" class="form-control" required autocomplete="off"/>
+<!--                       <select name="inputPMajor">
+                        <option value="saab"></option>
+                        <option value="mercedes">Mercedes SLK</option>
+                        <option value="audi">Audi TT</option>
+                        <option value="null" selected></option>
+                      </select> -->
+                    </div>
+                    <div class="field-wrap">
+                      <label>
+                          Secondary Major
+                      </label>
+                      <input type="major" name="inputSMajor" id="inputSMajor" class="form-control" required autocomplete="off"/>
+<!--                       <select name="inputSMajor">
+                        <option value="Select your major">Secondary Major</option>
+                        <option value="saab"></option>
+                        <option value="mercedes">Mercedes SLK</option>
+                        <option value="audi">Audi TT</option>
+                      </select> -->
+                    </div>
+                  </div>
+
+                  <div class = "top-row">
+                    <div class="field-wrap">
+                      <label>
+                          GPA<span class="req">*</span>
+                      </label>
+                      <input type="gpa" name="inputGPA" id="inputGPA" class="form-control" required autocomplete="off"/>
+<!--                       <select name="inputPMajor">
+                        <option value="saab"></option>
+                        <option value="mercedes">Mercedes SLK</option>
+                        <option value="audi">Audi TT</option>
+                        <option value="null" selected></option>
+                      </select> -->
+                    </div>
+                    <div class="field-wrap">
+                      <label>
+                          Graduation Year<span class="req">*</span>
+                      </label>
+                      <input type="gradYear" name="inputGradYear" id="inputGradYear" class="form-control" required autocomplete="off"/>
+<!--                       <select name="inputSMajor">
+                        <option value="Select your major">Secondary Major</option>
+                        <option value="saab"></option>
+                        <option value="mercedes">Mercedes SLK</option>
+                        <option value="audi">Audi TT</option>
+                      </select> -->
+                    </div>
+                  </div>
+
                   <div class="field-wrap">
                       <p class="dropboxtext">Files:<br>
                       Select files OR drag them into the box below.</p>
@@ -260,7 +304,7 @@
 
   <!-- <script src="js/index.js"></script> -->
   <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-2.1.1.min.js') }}"></script>
-  <script type="text/javascript" src="{{ url_for('static', filename='js/index.js') }}"></script>
+  <!-- <script type="text/javascript" src="{{ url_for('static', filename='js/index.js') }}"></script> -->
   <script type="text/javascript" src="{{ url_for('static', filename='js/uploadr.js') }}"></script>
 
 

@@ -258,24 +258,28 @@ function doUpload() {
                 // Uh-oh.
                 window.alert(data.msg);
                 $("#upload-form :input").removeAttr("disabled");
+                $('#loader').hide();
                 return;
             }
             else {
+
+                window.alert(data.msg);
                 // Ok! Get the UUID.
-                var uuid = data.msg;
+                // var uuid = data.msg;
                 // window.location = NEXT_URL + uuid;
                 // document.getElementById('test1').value = data.test1;
                 // document.getElementById('test2').value = data.test2;
                 // $('#phase2link').trigger('click');
                 $('#loader').hide();
-                $('#phase2').slideDown('slow');
+                return
+                // $('#phase2').slideDown('slow');
                 // var height = $(document).height();
                 // $('html, body').animate({ scrollTop: height }, 400,'slow');
-                $('html, body').animate({scrollTop: $(document).height()}, 1500);
-                populate(data);
+                // $('html, body').animate({scrollTop: $(document).height()}, 1500);
+                // populate(data);
 
             }
-            console.log(data);
+            // console.log(data);
         },
     });
 }
@@ -406,4 +410,26 @@ JSON.flatten = function(data) {
     }
     recurse(data, "");
     return result;
+}
+
+
+/* When the user clicks on the button,
+toggle between hiding and showing the dropdown content */
+function myFunction() {
+    document.getElementById("myDropdown").classList.toggle("show");
+}
+
+// Close the dropdown menu if the user clicks outside of it
+window.onclick = function(event) {
+  if (!event.target.matches('.dropbtn')) {
+
+    var dropdowns = document.getElementsByClassName("dropdown-content");
+    var i;
+    for (i = 0; i < dropdowns.length; i++) {
+      var openDropdown = dropdowns[i];
+      if (openDropdown.classList.contains('show')) {
+        openDropdown.classList.remove('show');
+      }
+    }
+  }
 }
