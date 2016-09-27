@@ -41,25 +41,38 @@ def upload():
 
         # Validate the input
         validation = validateInput(_email, _gpa, _year)
+        print queryDDB(_name)
         if validateInput(_email, _gpa, _year) != "OK":
-        	return ajax_response(False, validation)
+            return ajax_response(False, validation)
+        elif len(request.files.getlist("file")) == 0:
+            return ajax_response(False, "Please upload a file.")
+        elif not (queryDDB(_name).get('Item') is None):
+            return ajax_response(False, "An entry with this name: " + _name + " already exists. If this is a mistake shoot an email to contactbcnc@gmail.com")
 
         # Add entry to DDB
-        response = table.put_item(Item=fillItem(_uploadKey, _name, _email))
+        response = table.put_item(Item=fillItem(_uploadKey, _name, _email, _primary, _secondary, _gpa, _year))
 
         # Add files to S3
         for upload in request.files.getlist("file"):
-            s3.Bucket(s3bucket).put_object(Key=_uploadKey + '/' + upload.filename.rsplit("/")[0], Body=upload)
+            s3.Bucket(s3bucket).put_object(Key=_name + '/' + upload.filename.rsplit("/")[0], Body=upload)
     except Exception as e:
         return ajax_response(False, str(e))
-    return ajax_response(True, "Your information has successfully been recorded. Your upload key is as follows: " + _uploadKey + " if you would like to modify your submission in the future.")
+    return ajax_response(True, "Your information has successfully been recorded.") # Your upload key is as follows: " + _uploadKey + " if you would like to modify your submission in the future.")
 
-def fillItem(uuid, name, email):
-    return {
+def fillItem(uuid, name, email, pmajor, smajor, gpa, year):
+    Item =  {
         'UploadKey' : uuid,
         'Name' : name,
-        'Email' : email
+        'Email' : email,
+        'Primary Major' : pmajor,
+        'GPA' : gpa,
+        'Graduation Year' : year
     }
+    if not smajor:
+        return Item
+    else:
+        Item['Secondary Major'] = smajor
+        return Item
 
 def ajax_response(status, msg):
     status_code = "ok" if status else "error"
@@ -67,6 +80,14 @@ def ajax_response(status, msg):
         status=status_code,
         msg=msg,
 ))
+
+def queryDDB(name):
+    try:
+        item = table.get_item(Key={'Name': name})
+    except boto.dynamodb.exceptions.DynamoDBKeyNotFoundError:
+        item = None
+    return item
+
 
 EMAIL_REGEX = re.compile(r"[^@\s]+@[^@\s]+\.[^@\s.]+$")
 GPA_REGEX = re.compile("^[0-9]\.[0-9]+$")
