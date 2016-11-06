@@ -27,7 +27,9 @@ body {
     background-color: #1AB188;
 }
 
-
+.sub-heading {
+  color: #a0b3b0
+}
 
 *, *:before, *:after {
   box-sizing: border-box;

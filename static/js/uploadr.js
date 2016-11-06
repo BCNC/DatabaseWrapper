@@ -1,24 +1,18 @@
-/******************************************************************************
- * HTML5 Multiple File Uploader Demo                                          *
- ******************************************************************************/
 
-// Constants
-var MAX_UPLOAD_FILE_SIZE = 25*1024*1024; // 1 MB
+var MAX_UPLOAD_FILE_SIZE = 25*1024*1024; // 25 MB
 var UPLOAD_URL = "/upload";
+var UPDATE_URL = "/update";
 var NEXT_URL   = "/files/";
 
-// List of pending files to handle when the Upload button is finally clicked.
 var PENDING_FILES  = [];
 
 function stringify(obj)
 {
     var temp;
     temp = JSON.flatten(obj);
-    // console.log(temp);
     var string = "";
     for (var ke in temp) {
            if (temp.hasOwnProperty(ke)) {
-                // console.log(temp[ke])
                 string += temp[ke];
            }
     } 
@@ -76,146 +70,77 @@ $('.form').find('input, textarea').on('keyup blur focus', function (e) {
 
 });
 
-function populate(data) {
-    var string;
-    //phone
-    try{
-        if(data.basics.phone){
-            document.getElementById('inputPhone').value = data.basics.phone;
-            label = $('#inputPhone').prev('label');
-            label.addClass('active highlight');
-        }
-    }
-    catch(err){console.log(err);}
-    //address
-    try{
-        if(data.basics.address){
-            document.getElementById('inputAddress').value = data.basics.address;
-            label = $('#inputAddress').prev('label');
-            label.addClass('active highlight');
-        }
-    }
-    catch(err){console.log(err);}
-    // website
-    try{
-        if(data.basics.url){
-            // string = JSON.flatten(data.basics.url);
-            // console.log(stringify(data.basics.url));
-            document.getElementById('inputUrl').value = stringify(data.basics.url);
-            label = $('#inputUrl').prev('label');
-            label.addClass('active highlight');
-        }
-    }
-    catch(err){console.log(err);}
-    //////////////////////////////////////////////////////////////////
-    //Education
-    try{
-        if(data.education_and_training){
-            // string = JSON.flatten(data.skills);
-            // console.log(stringify(data.education_and_training));
-            string = stringify(data.education_and_training);
-            lstring = string.toLowerCase();
-            var n;
-
-            if(lstring.search("gpa")){
-                n = lstring.search("gpa");
-                document.getElementById('inputGPA').value = grabnextphrase(string,n,-1);
-                label = $('#inputGPA').prev('label');
-                label.addClass('active highlight');
-            }
-
-            if(lstring.search("university")){
-                n = lstring.search("university");
-        
-                document.getElementById('inputInstitution').value = "University" + grabnextphrase(string,n,4);
-                label = $('#inputInstitution').prev('label');
-                label.addClass('active highlight');
-            }
-
-            if(lstring.search("expected")){
-                n = lstring.search("expected");
-                console.log(n);
-                document.getElementById('inputGrad').value = grabnextphrase(string,n,-1);;
-                label = $('#inputGrad').prev('label');
-                label.addClass('active highlight');
-            }
-
-            if(lstring.search("major")){
-                n = lstring.search("major");
-                console.log(n);
-                document.getElementById('inputMajor').value = grabnextphrase(string,n,-1);;
-                label = $('#inputMajor').prev('label');
-                label.addClass('active highlight');
-            }
-        }
-    }
-    catch(err){console.log(err);}
-    /////////////////////////////////////////////////////////////////////////////////
-    //skills
-    try{
-        if(data.skills){
-            // string = JSON.flatten(data.skills);
-            console.log(stringify(data.skills))
-            document.getElementById('inputSkills').value = stringify(data.skills);
-        }
-    }
-    catch(err){console.log(err);}
-    /////////////////////////////////////////////////////////////////////////////////
-    // Work Experience
-    try{
-        if(data.work_experience){
-            // string = JSON.flatten(data.skills);
-            console.log(stringify(data.skills))
-            document.getElementById('inputWE1DESCRIPTION').value = stringify(data.work_experience);
-        }
-    }
-    catch(err){console.log(err);}
-
+function goToUpload() {
+    $('#secondary').slideUp('medium');
+    $('#main').slideDown('medium');
 }
 
-$(document).ready(function() {
-    // Set up the drag/drop zone.
-    $('#phase2').hide();
-    $('#loader').hide();
-    initDropbox();
-    // Set up the handler for the file input box.
-    $("#file-picker").on("change", function() {
-        handleFiles(this.files);
-    });
+function goToUpdate() {
+    $('#main').slideUp('medium');
+    $('#secondary').slideDown('medium');
+}
 
-    // Handle the submit button.
-    $("#upload-button").on("click", function(e) {
-        // If the user has JS disabled, none of this code is running but the
-        // file multi-upload input box should still work. In this case they'll
-        // just POST to the upload endpoint directly. However, with JS we'll do
-        // the POST using ajax and then redirect them ourself when done.
-        e.preventDefault();
-        $('#loader').show();
-        doUpload();
-    })
-    $("#done-button").on("click", function(e) {
-        e.preventDefault();
-        window.location="/done";
-    })
-});
+function populate(data) {
+
+    goToUpload();
+    $('#UpdateUploadKey').show();
+    $('#instruct1').hide();
+    $('#instruct2').show();
+    console.log(typeof data);
+    var names = data.Name.split(" ");
+    //phone
+    try{
+        if(names[0]){
+            document.getElementById('inputFName').value = names[0];
+            label = $('#inputFName').prev('label');
+            label.addClass('active highlight');
+        }
+        if(names[1]){
+            document.getElementById('inputLName').value = names[1];
+            label = $('#inputLName').prev('label');
+            label.addClass('active highlight');
+        }
+        if(data.Email){
+            document.getElementById('inputEmail').value = data.Email;
+            label = $('#inputEmail').prev('label');
+            label.addClass('active highlight');
+        }
+        if(data["Graduation Year"]){
+            document.getElementById('inputGradYear').value = data["Graduation Year"];
+            label = $('#inputGradYear').prev('label');
+            label.addClass('active highlight');
+        }
+        if(data.GPA){
+            document.getElementById('inputGPA').value = data.GPA;
+            label = $('#inputGPA').prev('label');
+            label.addClass('active highlight');
+        }
+        if(data["Primary Major"]){
+            document.getElementById('inputPMajor').value = data["Primary Major"];
+            label = $('#inputPMajor').prev('label');
+            label.addClass('active highlight');
+        }
+        if(data.UploadKey){
+            document.getElementById('inputUploadKey').value = data.UploadKey;
+            label = $('#inputUploadKey').prev('label');
+            label.addClass('active highlight');
+        }
+        if(data["Secondary Major"]){
+            document.getElementById('inputSMajor').value = data["Secondary Major"];
+            label = $('#inputSMajor').prev('label');
+            label.addClass('active highlight');
+        }
+    }
+    catch(err){console.log(err);}
+}
 
 
 function doUpload() {
     $("#progress").show();
     var $progressBar   = $("#progress-bar");
-
-    // Gray out the form.
-    // $("#upload-form :input").attr("disabled", "disabled");
-
-    // Initialize the progress bar.
     $progressBar.css({"width": "0%"});
-
-    // Collect the form data.
-    fd = collectFormData();
-
-    // Attach the files.
+    fd = collectFormData(true);
     for (var i = 0, ie = PENDING_FILES.length; i < ie; i++) {
-        // Collect the other form data.
         fd.append("file", PENDING_FILES[i]);
     }
 
@@ -252,10 +177,8 @@ function doUpload() {
                         console.log(data);
 
             data = JSON.parse(data);
-
-            // How'd it go?
+            console.log(data);
             if (data.status === "error") {
-                // Uh-oh.
                 window.alert(data.msg);
                 $("#upload-form :input").removeAttr("disabled");
                 $('#loader').hide();
@@ -264,57 +187,88 @@ function doUpload() {
             else {
 
                 window.alert(data.msg);
-                // Ok! Get the UUID.
-                // var uuid = data.msg;
-                // window.location = NEXT_URL + uuid;
-                // document.getElementById('test1').value = data.test1;
-                // document.getElementById('test2').value = data.test2;
-                // $('#phase2link').trigger('click');
                 $('#loader').hide();
                 return
-                // $('#phase2').slideDown('slow');
-                // var height = $(document).height();
-                // $('html, body').animate({ scrollTop: height }, 400,'slow');
-                // $('html, body').animate({scrollTop: $(document).height()}, 1500);
-                // populate(data);
 
             }
-            // console.log(data);
+        },
+    });
+}
+
+function doUpdate() {
+    fd = collectFormData(false);
+    // Inform the back-end that we're doing this over ajax.
+    fd.append("__ajax", "true");
+
+    var xhr = $.ajax({
+        url: UPDATE_URL,
+        method: "POST",
+        contentType: false,
+        processData: false,
+        cache: false,
+        data: fd,
+        success: function(data) {
+            data = JSON.parse(data);
+            console.log(data);
+            if (data.status === "error") {
+                window.alert(data.msg);
+                $("#upload-form :input").removeAttr("disabled");
+                $('#loader').hide();
+                return;
+            }
+            else {
+                console.log("Hello David population can now begin");
+                console.log(data.item);
+                populate(data.item);
+                return
+
+            }
         },
     });
 }
 
 
-function collectFormData() {
-    // Go through all the form fields and collect their names/values.
+function collectFormData(boolean) {
     var fd = new FormData();
-
-    $("#upload-form :input").each(function() {
-        var $this = $(this);
-        var name  = $this.attr("name");
-        var type  = $this.attr("type") || "";
-        var value = $this.val();
-
-        // No name = no care.
-        if (name === undefined) {
-            return;
-        }
-
-        // Skip the file upload box for now.
-        if (type === "file") {
-            return;
-        }
-
-        // Checkboxes? Only add their value if they're checked.
-        if (type === "checkbox" || type === "radio") {
-            if (!$this.is(":checked")) {
+    if(boolean){
+        $("#upload-form :input").each(function() {
+            var $this = $(this);
+            var name  = $this.attr("name");
+            var type  = $this.attr("type") || "";
+            var value = $this.val();
+            if (name === undefined) {
                 return;
             }
-        }
-
-        fd.append(name, value);
-    });
-
+            if (type === "file") {
+                return;
+            }
+            if (type === "checkbox" || type === "radio") {
+                if (!$this.is(":checked")) {
+                    return;
+                }
+            }
+            fd.append(name, value);
+        });
+    } else {
+        $("#update-form :input").each(function() {
+            var $this = $(this);
+            var name  = $this.attr("name");
+            var type  = $this.attr("type") || "";
+            var value = $this.val();
+            if (name === undefined) {
+                return;
+            }
+            if (type === "file") {
+                return;
+            }
+            if (type === "checkbox" || type === "radio") {
+                if (!$this.is(":checked")) {
+                    return;
+                }
+            }
+            fd.append(name, value);
+        });
+    }
     return fd;
 }
 
@@ -369,25 +323,6 @@ function initDropbox() {
 }
 
 
-
-
-
-
-// $('.tab a').on('click', function (e) {
-  
-//   e.preventDefault();
-  
-//   $(this).parent().addClass('active');
-//   $(this).parent().siblings().removeClass('active');
-  
-//   target = $(this).attr('href');
-
-//   $('.tab-content > div').not(target).hide();
-  
-//   $(target).fadeIn(600);
-  
-// });
-
 JSON.flatten = function(data) {
     var result = {};
     function recurse (cur, prop) {
@@ -413,13 +348,10 @@ JSON.flatten = function(data) {
 }
 
 
-/* When the user clicks on the button,
-toggle between hiding and showing the dropdown content */
 function myFunction() {
     document.getElementById("myDropdown").classList.toggle("show");
 }
 
-// Close the dropdown menu if the user clicks outside of it
 window.onclick = function(event) {
   if (!event.target.matches('.dropbtn')) {
 
@@ -433,3 +365,33 @@ window.onclick = function(event) {
     }
   }
 }
+
+$(document).ready(function() {
+    $('#phase2').hide();
+    $('#loader').hide();
+    $('#secondary').hide();
+    $('#UpdateUploadKey').hide();
+    $("#instruct2").hide();
+    initDropbox();
+    $("#file-picker").on("change", function() {
+        handleFiles(this.files);
+    });
+    $("#upload-button").on("click", function(e) {
+        e.preventDefault();
+        $('#loader').show();
+        doUpload();
+    });
+
+    $("#update-button").on("click", function(e) {
+        e.preventDefault();
+        doUpdate();
+    });
+    $("#done-button").on("click", function(e) {
+        e.preventDefault();
+        window.location="/done";
+    });
+    $("#upload-key").on("click", function(e) {
+        goToUpdate();
+    });
+
+});

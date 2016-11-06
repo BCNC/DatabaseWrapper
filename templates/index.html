@@ -1,313 +1,141 @@
 <!DOCTYPE html>
 <html >
-<head>
-    <meta charset="UTF-8">
-    <title>BCNC Resume Database</title>
-    <link href='http://fonts.googleapis.com/css?family=Titillium+Web:400,300,600' rel='stylesheet' type='text/css'>
-    
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/normalize.css') }}">
-    
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/dropdown.css') }}">
+	<head>
+		<meta charset="UTF-8">
+		<title>Sign-Up/Login Form</title>
+		<link href='http://fonts.googleapis.com/css?family=Titillium+Web:400,300,600' rel='stylesheet' type='text/css'>
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/normalize.css') }}">
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/dropdown.css') }}">
+	</head>
+	<body>
+		<div class="form" id="main">
+			<div class="tab-content">
+				<div id="signup">   
+					<h1>Enter the BCNC database</h1>
+					<h2 class="sub-heading" id="instruct1">Already in database? To modify existing submission click <a id="upload-key">here</a>.</h2>
+					<h2 class="sub-heading" id="instruct2">Please update data that is outdated.</h2>
+					<form id="upload-form" action="{{ url_for('upload') }}" method="POST" enctype="multipart/form-data">
+						<div class="top-row">
+							<div class="field-wrap">
+								<label>
+									First Name<span class="req">*</span>
+								</label>
+								<input type="name" name="inputFName" id="inputFName" class="form-control" required autocomplete="off" />
+							</div>
 
-    
-    
-    
-</head>
+							<div class="field-wrap">
+								<label>
+									Last Name<span class="req">*</span>
+								</label>
+								<input type="name" name="inputLName" id="inputLName" class="form-control" required autocomplete="off" />
+							</div>
+						</div>
+						<div class="field-wrap">
+							<label>
+								Email Address<span class="req">*</span>
+							</label>
+							<input type="email" name="inputEmail" id="inputEmail" class="form-control" required autocomplete="off"/>
+						</div>
 
-<body>
-    <div class="form">
+						<div class = "top-row">
+							<div class="field-wrap">
+								<label>
+									Primary Major<span class="req">*</span>
+								</label>
+								<input type="major" name="inputPMajor" id="inputPMajor" class="form-control" required autocomplete="off"/>
 
-            <div class="tab-content">
-            <div id="signup">   
-                <h1>Enter the BCNC database</h1>
+							</div>
+							<div class="field-wrap">
+								<label>
+									Secondary Major
+								</label>
+								<input type="major" name="inputSMajor" id="inputSMajor" class="form-control" required autocomplete="off"/>
+							</div>
+						</div>
+						<div class = "top-row">
+							<div class="field-wrap">
+								<label>
+									GPA<span class="req">*</span>
+								</label>
+								<input type="gpa" name="inputGPA" id="inputGPA" class="form-control" required autocomplete="off"/>
+							</div>
+							<div class="field-wrap">
+								<label>
+									Graduation Year<span class="req">*</span>
+								</label>
+								<input type="gradYear" name="inputGradYear" id="inputGradYear" class="form-control" required autocomplete="off"/>
+							</div>
+						</div>
+						<div class="field-wrap" id="UpdateUploadKey">
+							<label>
+								Upload Key<span class="req">*</span>
+							</label>
+							<input type="inputUploadKey" name="inputUploadKey" id="inputUploadKey" class="form-control" required autocomplete="off" />
+						</div>
+						<div class="field-wrap">
+							<p class="dropboxtext">Files:<br>
+								Select files OR drag them into the box below.</p>
+								<input id="file-picker" type="file" name="file" accept="*" multiple>
+								<div id="dropbox">
+									<p class="dropboxtext">Drag and Drop Files Here</p>
+								</div><p></p>
+								<fieldset id="progress" style="display: none">
+									<legend class="dropboxtext">Files Progress</legend>
+									<div class="progress-trough">
+										<div id="progress-bar" class="progress-bar">0%</div>
+									</div>
+								</fieldset><p></p>
+							</div>
+							<button id="upload-button" type="submit" class="button button-block"/>Submit</button>
+							<div id="loader">
+								<div id="loader_1" class="loader"></div>
+								<div id="loader_2" class="loader"></div>
+								<div id="loader_3" class="loader"></div>
+								<div id="loader_4" class="loader"></div>
+								<div id="loader_5" class="loader"></div>
+								<div id="loader_6" class="loader"></div>
+								<div id="loader_7" class="loader"></div>
+								<div id="loader_8" class="loader"></div>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+		<div class="form" id="secondary">
+			<div class="tab-content">
+				<div id="signup">   
+					<h1>Please enter Upload Key from previous submission</h1>
+					<h2 class="sub-heading">Upload key was emailed to you during previous submission. If for some reason you cannot recover this upload key, please email contactbcnc@gmail.com</h2>
+					<form id="update-form" action="{{ url_for('update') }}" method="POST" enctype="multipart/form-data">
+						<div class="top-row">
+							<div class="field-wrap">
+								<label>
+									First Name<span class="req">*</span>
+								</label>
+								<input type="name" name="inputFName" id="inputFName" class="form-control" required autocomplete="off" />
+							</div>
 
-                <form id="upload-form" action="{{ url_for('upload') }}" method="POST" enctype="multipart/form-data">
-
-                  <div class="top-row">
-                      <div class="field-wrap">
-                          <label>
-                              First Name<span class="req">*</span>
-                          </label>
-                          <input type="name" name="inputFName" id="inputFName" class="form-control" required autocomplete="off" />
-                      </div>
-
-                      <div class="field-wrap">
-                          <label>
-                              Last Name<span class="req">*</span>
-                          </label>
-                          <input type="name" name="inputLName" id="inputLName" class="form-control" required autocomplete="off" />
-                      </div>
-                  </div>
-
-                  <div class="field-wrap">
-                      <label>
-                          Email Address<span class="req">*</span>
-                      </label>
-                      <input type="email" name="inputEmail" id="inputEmail" class="form-control" required autocomplete="off"/>
-                  </div>
-
-                  <div class = "top-row">
-                    <div class="field-wrap">
-                      <label>
-                          Primary Major<span class="req">*</span>
-                      </label>
-                      <input type="major" name="inputPMajor" id="inputPMajor" class="form-control" required autocomplete="off"/>
-<!--                       <select name="inputPMajor">
-                        <option value="saab"></option>
-                        <option value="mercedes">Mercedes SLK</option>
-                        <option value="audi">Audi TT</option>
-                        <option value="null" selected></option>
-                      </select> -->
-                    </div>
-                    <div class="field-wrap">
-                      <label>
-                          Secondary Major
-                      </label>
-                      <input type="major" name="inputSMajor" id="inputSMajor" class="form-control" required autocomplete="off"/>
-<!--                       <select name="inputSMajor">
-                        <option value="Select your major">Secondary Major</option>
-                        <option value="saab"></option>
-                        <option value="mercedes">Mercedes SLK</option>
-                        <option value="audi">Audi TT</option>
-                      </select> -->
-                    </div>
-                  </div>
-
-                  <div class = "top-row">
-                    <div class="field-wrap">
-                      <label>
-                          GPA<span class="req">*</span>
-                      </label>
-                      <input type="gpa" name="inputGPA" id="inputGPA" class="form-control" required autocomplete="off"/>
-<!--                       <select name="inputPMajor">
-                        <option value="saab"></option>
-                        <option value="mercedes">Mercedes SLK</option>
-                        <option value="audi">Audi TT</option>
-                        <option value="null" selected></option>
-                      </select> -->
-                    </div>
-                    <div class="field-wrap">
-                      <label>
-                          Graduation Year<span class="req">*</span>
-                      </label>
-                      <input type="gradYear" name="inputGradYear" id="inputGradYear" class="form-control" required autocomplete="off"/>
-<!--                       <select name="inputSMajor">
-                        <option value="Select your major">Secondary Major</option>
-                        <option value="saab"></option>
-                        <option value="mercedes">Mercedes SLK</option>
-                        <option value="audi">Audi TT</option>
-                      </select> -->
-                    </div>
-                  </div>
-
-                  <div class="field-wrap">
-                      <p class="dropboxtext">Resume and relevant files:<br>
-                      Select files OR drag them into the box below.</p>
-                      <input id="file-picker" type="file" name="file" accept="*" multiple>
-                      <div id="dropbox">
-                          <p class="dropboxtext">Drag and Drop Files Here</p>
-                      </div><p></p>
-
-                      <fieldset id="progress" style="display: none">
-                          <legend class="dropboxtext">Files Progress</legend>
-
-                          <div class="progress-trough">
-                              <div id="progress-bar" class="progress-bar">0%</div>
-                          </div>
-                      </fieldset><p></p>
-                  </div>
-
-                  <button id="upload-button" type="submit" class="button button-block"/>Submit</button>
-
-                  <div id="loader">
-                    <div id="loader_1" class="loader"></div>
-                    <div id="loader_2" class="loader"></div>
-                    <div id="loader_3" class="loader"></div>
-                    <div id="loader_4" class="loader"></div>
-                    <div id="loader_5" class="loader"></div>
-                    <div id="loader_6" class="loader"></div>
-                    <div id="loader_7" class="loader"></div>
-                    <div id="loader_8" class="loader"></div>
-                  </div>
-
-                </form>
-
-                </div>
-
-
-            </div>
-
-      </div><!-- tab-content -->
-
-  </div> <!-- /form -->
-
-<!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
-
-  <div class="form" id="phase2">
-
-            <div class="tab-content">
-            <div id="signup">   
-                <h1>Sign Up for Free</h1>
-
-                <form id="upload-form" action="{{ url_for('upload') }}" method="POST" enctype="multipart/form-data">
-
-                  <div class="field-wrap">
-                      <label>
-                          Address<span class="req">*</span>
-                      </label>
-                      <input type="text" name="inputAddress" id="inputAddress" class="form-control" autocomplete="off"/>
-                  </div>
-
-                  <div class="field-wrap">
-                      <label>
-                          Phone Number<span class="req">*</span>
-                      </label>
-                      <input type="text" name="inputPhone" id="inputPhone" class="form-control" autocomplete="off"/>
-                  </div>
-
-                  <div class="field-wrap">
-                      <label>
-                          Website<span class="req">*</span>
-                      </label>
-                      <input type="text" name="inputUrl" id="inputUrl" class="form-control" autocomplete="off"/>
-                  </div>
-
-                 <div class="block">
-                    <h1 class="subheader">Education</h1>
-                      <div class="top-row">
-                          <div class="field-wrap">
-                              <label>
-                                  Graduation Date<span class="req">*</span>
-                              </label>
-                              <input type="text" name="inputGrad" id="inputGrad" class="form-control" autocomplete="off" />
-                          </div>
-
-                          <div class="field-wrap">
-                              <label>
-                                  GPA<span class="req">*</span>
-                              </label>
-                              <input type="text" name="inputGPA" id="inputGPA" class="form-control" autocomplete="off" />
-                          </div>
-                        </div>
-
-                          <div class="field-wrap">
-                              <label>
-                                  Institution<span class="req">*</span>
-                              </label>
-                              <input type="text" name="inputInstitution" id="inputInstitution" class="form-control" autocomplete="off" />
-                          </div>
-                          <div class="field-wrap">
-                              <label>
-                                  Major<span class="req">*</span>
-                              </label>
-                              <input type="text" name="inputMajor" id="inputMajor" class="form-control" autocomplete="off" />
-                          </div>
- 
-                          </div>
-                  </div>
-
-                  <div class="block">
-                    <h1 class="subheader">Primary Work Experience</h1>
-                      <div class="top-row">
-                          <div class="field-wrap">
-                              <label>
-                                  Start Date<span class="req">*</span>
-                              </label>
-                              <input type="text" name="inputWE1SD" id="inputWE1SD" class="form-control" autocomplete="off" />
-                          </div>
-
-                          <div class="field-wrap">
-                              <label>
-                                  End Date<span class="req">*</span>
-                              </label>
-                              <input type="text" name="inputWE1ED" id="inputWE1ED" class="form-control" autocomplete="off" />
-                          </div>
-                        </div>
-                        <div class="top-row">
-                          <div class="field-wrap">
-                              <label>
-                                  Organization<span class="req">*</span>
-                              </label>
-                              <input type="text" name="inputWE1ORG" id="inputWE1ORG" class="form-control" autocomplete="off" />
-                          </div>
-
-                          <div class="field-wrap">
-                              <label>
-                                  Title<span class="req">*</span>
-                              </label>
-                              <input type="text" name="inputWE1TITLE" id="inputWE1TITLE" class="form-control" autocomplete="off" />
-                          </div>
-                      </div>
-                      <div class="field-wrap">
-                          <h1 class="descriptionHeader">Description</h1>
-                          <textarea id="inputWE1DESCRIPTION" rows="3" cols="70"></textarea>
-                      </div>
-                  </div>
-
-                   <div class="block">
-                    <h1 class="subheader">Secondary Work Experience</h1>
-                      <div class="top-row">
-                          <div class="field-wrap">
-                              <label>
-                                  Start Date<span class="req">*</span>
-                              </label>
-                              <input type="text" name="inputWE2SD" id="inputWE2SD" class="form-control" autocomplete="off" />
-                          </div>
-
-                          <div class="field-wrap">
-                              <label>
-                                  End Date<span class="req">*</span>
-                              </label>
-                            <input type="text" name="inputWE2ED" id="inputWE2ED" class="form-control" autocomplete="off" />
-                          </div>
-                        </div>
-                        <div class="top-row">
-                          <div class="field-wrap">
-                              <label>
-                                  Organization<span class="req">*</span>
-                              </label>
-                              <input type="text" name="inputWE2ORG" id="inputWE2ORG" class="form-control" autocomplete="off" />
-                          </div>
-
-                          <div class="field-wrap">
-                              <label>
-                                  Title<span class="req">*</span>
-                              </label>
-                              <input type="text" name="inputWE2TITLE" id="inputWE2TITLE" class="form-control" autocomplete="off" />
-                          </div>
-                      </div>
-                      <div class="field-wrap">
-                      <h1 class="descriptionHeader">Description</h1>
-                          <textarea id="inputWE2DESCRIPTION" rows="3" cols="70"></textarea>
-                      </div>
-                  </div>
-
-                    <div class="field-wrap">
-                          <h1 class="descriptionHeader">Skills</h1>
-                          <textarea id="inputSkills" rows="3" cols="70"></textarea>
-                    </div>
-
-                  <button id="done-button" href="/done" class="button button-block"/>Submit</button>
-
-                </form>
-
-                </div>
-
-
-            </div>
-
-      </div><!-- tab-content -->
-
-  </div> <!-- /form -->
-  <!-- <script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script> -->
-
-  <!-- <script src="js/index.js"></script> -->
-  <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-2.1.1.min.js') }}"></script>
-  <!-- <script type="text/javascript" src="{{ url_for('static', filename='js/index.js') }}"></script> -->
-  <script type="text/javascript" src="{{ url_for('static', filename='js/uploadr.js') }}"></script>
-
-
-
-</body>
+							<div class="field-wrap">
+								<label>
+									Last Name<span class="req">*</span>
+								</label>
+								<input type="name" name="inputLName" id="inputLName" class="form-control" required autocomplete="off" />
+							</div>
+						</div>
+						<div class="field-wrap">
+							<label>
+								Upload Key<span class="req">*</span>
+							</label>
+							<input type="inputUploadKey" name="inputUploadKey" id="inputUploadKey" class="form-control" required autocomplete="off" />
+						</div>
+						<button id="update-button" type="submit" class="button button-block"/>Submit</button>
+					</form>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery-2.1.1.min.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/uploadr.js') }}"></script>
+	</body>
 </html>

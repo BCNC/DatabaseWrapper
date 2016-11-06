@@ -1,21 +1,37 @@
 import boto3
-import re
-from flask import Flask, render_template, request, json, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for
 from uuid import uuid4
+from util import *
+from ajax import *
 
 application = Flask(__name__, static_url_path='')
 
-##############DDB#######################################
-ddbregion = 'us-west-2'
-tablename = 'BCNCResumes'
-ddb = boto3.resource('dynamodb', region_name=ddbregion)
-table = ddb.Table(tablename)
-########################################################
-##############S3########################################
-s3region = 'us-west-2'
-s3bucket = 'bcncresumes'
-s3 = boto3.resource('s3', region_name=s3region)
-########################################################
+try:
+    ddbregion = 'us-west-2'
+    tablename = 'BCNCResumes'
+    ddb = boto3.resource('dynamodb', region_name=ddbregion)
+    table = ddb.Table(tablename)
+except Exception as err:
+    print "DynamoDB failed to initialize because: " + str(err)
+    exit()
+print "DynamoDB finished initializing."
+
+try:
+    s3region = 'us-west-2'
+    s3bucket = 'bcncresumes'
+    s3 = boto3.resource('s3', region_name=s3region)
+except Exception as err:
+    print "S3 Failed to initialize because: " + str(err)
+    exit()
+print "S3 finished initializing."
+
+try:
+    sesregion = 'us-west-2'
+    ses = boto3.client('ses', region_name=sesregion)
+except Exception as err:
+    print "SES Failed to initialize because: " + str(err)
+    exit()
+print "SES finished initializing."
 
 @application.route('/')
 def index():
@@ -25,8 +41,11 @@ def index():
 def upload():
     try:
     	form = request.form
-
-        _uploadKey = str(uuid4())
+        flag = False
+        _uploadKey = str(request.form['inputUploadKey'])
+        if not _uploadKey:
+            _uploadKey = str(uuid4())
+            flag = True
         _firstName = str(request.form['inputFName'])
         _lastName = str(request.form['inputLName'])
         _name = _firstName + " " + _lastName
@@ -41,12 +60,11 @@ def upload():
 
         # Validate the input
         validation = validateInput(_email, _gpa, _year)
-        print queryDDB(_name)
         if validateInput(_email, _gpa, _year) != "OK":
             return ajax_response(False, validation)
         elif len(request.files.getlist("file")) == 0:
             return ajax_response(False, "Please upload a file.")
-        elif not (queryDDB(_name).get('Item') is None):
+        elif flag and not (queryDDB(_name).get('Item') is None):
             return ajax_response(False, "An entry with this name: " + _name + " already exists. If this is a mistake shoot an email to contactbcnc@gmail.com")
 
         # Add entry to DDB
@@ -57,29 +75,30 @@ def upload():
             s3.Bucket(s3bucket).put_object(Key=_name + '/' + upload.filename.rsplit("/")[0], Body=upload)
     except Exception as e:
         return ajax_response(False, str(e))
-    return ajax_response(True, "Your information has successfully been recorded.") # Your upload key is as follows: " + _uploadKey + " if you would like to modify your submission in the future.")
+    sendConfirmationEmail(ses, _name ,_uploadKey,_email)
+    return ajax_response(True, "Your information has successfully been recorded.\nYou should receive an email from contactbcnc@gmail.com containing an upload key in case of future updates.\n\nUpload Key: " + _uploadKey)
 
-def fillItem(uuid, name, email, pmajor, smajor, gpa, year):
-    Item =  {
-        'UploadKey' : uuid,
-        'Name' : name,
-        'Email' : email,
-        'Primary Major' : pmajor,
-        'GPA' : gpa,
-        'Graduation Year' : year
-    }
-    if not smajor:
-        return Item
-    else:
-        Item['Secondary Major'] = smajor
-        return Item
+@application.route("/update", methods=['POST','GET'])
+def update():
+    try:
+        form = request.form
+        print form
+        _requestedUploadKey = str(request.form['inputUploadKey'])
+        _firstName = str(request.form['inputFName'])
+        _lastName = str(request.form['inputLName'])
+        _name = _firstName + " " + _lastName
+        print _requestedUploadKey + _name
 
-def ajax_response(status, msg):
-    status_code = "ok" if status else "error"
-    return json.dumps(dict(
-        status=status_code,
-        msg=msg,
-))
+        if queryDDB(_name).get('Item') is None:
+            return ajax_response(False, "No entry under this name exists")
+        else:
+            item = queryDDB(_name).get('Item')
+        if item.get('UploadKey') != _requestedUploadKey:
+            return ajax_response(False, "Entered Upload Key does not match the one in the database.")
+        else:
+            return ajax_response_item(True, item)
+    except Exception as e:
+        return ajax_response(False, str(e))
 
 def queryDDB(name):
     try:
@@ -88,27 +107,9 @@ def queryDDB(name):
         item = None
     return item
 
-
-EMAIL_REGEX = re.compile(r"[^@\s]+@[^@\s]+\.[^@\s.]+$")
-GPA_REGEX = re.compile("^[0-9]\.[0-9]+$")
-def validateInput(email, gpa, year):
-	try:
-		if not EMAIL_REGEX.match(email):
-			return "Input email is not valid. Please check for typos."
-		elif not GPA_REGEX.match(gpa) or float(gpa) > 4.0:
-			return "Input GPA is not valid. Must be in format D.DD, where 'D' is a digit. Must be on 4.0 scale."
-			# TODO: currently just makes sure reasonable. Probably narrow by current date.
-		elif int(year) < 1950 or int(year) > 2050:
-			return "Input graduation date must be somewhat reasonable."
-		else:
-			return "OK"
-	except ValueError:
-		return "Input graduation date must be a number in the 2000's. GPA must be on 4.0 scale."
-
 if __name__ == "__main__":
-    application.debug = True
+    application.debug = False
     application.run()
-
 
 
 
