@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html >
+	<head>
+		<meta charset="UTF-8">
+		<title>Sign-Up/Login Form</title>
+		<link href='http://fonts.googleapis.com/css?family=Titillium+Web:400,300,600' rel='stylesheet' type='text/css'>
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/normalize.css') }}">
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/dropdown.css') }}">
+	</head>
+	<body>
+		<div class="form">
+			<div class="tab-content">
+				<div id="signup">   
+					<h1>Congratulations your information has successfully been recorded.</h1>
+					<h2 class="sub-heading">You should receive an email from contactbcnc@gmail.com containing a copy of the upload key below. You will need this key in order to update your submission.</h2>
+					<h2 class="sub-heading">Your key: {{ uploadKey }}</h2>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

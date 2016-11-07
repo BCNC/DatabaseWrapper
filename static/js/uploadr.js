@@ -3,46 +3,13 @@ var MAX_UPLOAD_FILE_SIZE = 25*1024*1024; // 25 MB
 var UPLOAD_URL = "/upload";
 var UPDATE_URL = "/update";
 var NEXT_URL   = "/files/";
+var DONE = "/done";
 
 var PENDING_FILES  = [];
 
-function stringify(obj)
-{
-    var temp;
-    temp = JSON.flatten(obj);
-    var string = "";
-    for (var ke in temp) {
-           if (temp.hasOwnProperty(ke)) {
-                string += temp[ke];
-           }
-    } 
-    return string;
-}
 
-function grabnextphrase(string,n,skip)
-{
-    var left = -1;
-    var right = 0;
-    while(true){
-        if(string[n + right] == " " && left == -1){
-            left = right;
-            right++;
-        }
-        else if(string[n + right] == " " && left != -1)
-            break;
-        else
-            right++;
-    }
-    var returnString = string.substring(n + left, n + right);
-    if(returnString.length >= skip)
-        return returnString;
-    else{
-        return returnString + grabnextphrase(string,n + right,skip);
-    }
-}
-
+// Fancy JQuery for input text animation.
 $('.form').find('input, textarea').on('keyup blur focus', function (e) {
-  
   var $this = $(this),
       label = $this.prev('label');
 
@@ -67,7 +34,6 @@ $('.form').find('input, textarea').on('keyup blur focus', function (e) {
             label.addClass('highlight');
             }
     }
-
 });
 
 function goToUpload() {
@@ -80,15 +46,17 @@ function goToUpdate() {
     $('#secondary').slideDown('medium');
 }
 
+/*
+ *  After an update request has succeeded, go to "upload view" and populate
+ *  the current fields with the existing data in the database.
+ *  input: data, a json object representing data inside ddb
+ */
 function populate(data) {
-
     goToUpload();
     $('#UpdateUploadKey').show();
     $('#instruct1').hide();
     $('#instruct2').show();
-    console.log(typeof data);
     var names = data.Name.split(" ");
-    //phone
     try{
         if(names[0]){
             document.getElementById('inputFName').value = names[0];
@@ -134,7 +102,11 @@ function populate(data) {
     catch(err){console.log(err);}
 }
 
-
+/*
+ * Basic HTTP request sent using ajax using the data inputted into the form.
+ * If server returns an error, print error string into the popup window.
+ * Else redirect to a "success" page.
+ */
 function doUpload() {
     $("#progress").show();
     var $progressBar   = $("#progress-bar");
@@ -144,7 +116,6 @@ function doUpload() {
         fd.append("file", PENDING_FILES[i]);
     }
 
-    // Inform the back-end that we're doing this over ajax.
     fd.append("__ajax", "true");
 
     var xhr = $.ajax({
@@ -158,8 +129,6 @@ function doUpload() {
                     if (event.lengthComputable) {
                         percent = Math.ceil(position / total * 100);
                     }
-
-                    // Set the progress bar.
                     $progressBar.css({"width": percent + "%"});
                     $progressBar.text(percent + "%");
                 }, false)
@@ -174,10 +143,7 @@ function doUpload() {
         data: fd,
         success: function(data) {
             $progressBar.css({"width": "100%"});
-                        console.log(data);
-
             data = JSON.parse(data);
-            console.log(data);
             if (data.status === "error") {
                 window.alert(data.msg);
                 $("#upload-form :input").removeAttr("disabled");
@@ -185,19 +151,24 @@ function doUpload() {
                 return;
             }
             else {
-
-                window.alert(data.msg);
+                currentLoc = window.location.href;
                 $('#loader').hide();
+                console.log(currentLoc + "/done" + "?uploadkey=" + data.msg);
+                window.location.replace(currentLoc + "done?uploadkey=" + data.msg);
                 return
-
             }
         },
     });
 }
 
+/*
+ * Similar to above, this time for update function.
+ * If error raise window, and return error message.
+ *
+ * Else, go to populate.
+ */
 function doUpdate() {
     fd = collectFormData(false);
-    // Inform the back-end that we're doing this over ajax.
     fd.append("__ajax", "true");
 
     var xhr = $.ajax({
@@ -209,7 +180,6 @@ function doUpdate() {
         data: fd,
         success: function(data) {
             data = JSON.parse(data);
-            console.log(data);
             if (data.status === "error") {
                 window.alert(data.msg);
                 $("#upload-form :input").removeAttr("disabled");
@@ -217,8 +187,6 @@ function doUpdate() {
                 return;
             }
             else {
-                console.log("Hello David population can now begin");
-                console.log(data.item);
                 populate(data.item);
                 return
 
@@ -227,7 +195,11 @@ function doUpdate() {
     });
 }
 
-
+/*
+ * Self explanatory, populate form into a JSON object
+ * input: boolean flag that determines whether the HTML
+ * form to populate from is update or upload.
+ */
 function collectFormData(boolean) {
     var fd = new FormData();
     if(boolean){
@@ -272,19 +244,24 @@ function collectFormData(boolean) {
     return fd;
 }
 
-
+/*
+ * Store files in dropbox in a queue.
+ *
+ */
 function handleFiles(files) {
-    // Add them to the pending files list.
     for (var i = 0, ie = files.length; i < ie; i++) {
         PENDING_FILES.push(files[i]);
     }
 }
 
 
+/*
+ * Initialized the drag-drop filebox upload.
+ * 
+ */
 function initDropbox() {
     var $dropbox = $("#dropbox");
 
-    // On drag enter...
     $dropbox.on("dragenter", function(e) {
         e.stopPropagation();
         e.preventDefault();
@@ -322,57 +299,16 @@ function initDropbox() {
     $(document).on("drop", stopDefault);
 }
 
-
-JSON.flatten = function(data) {
-    var result = {};
-    function recurse (cur, prop) {
-        if (Object(cur) !== cur) {
-            result[prop] = cur;
-        } else if (Array.isArray(cur)) {
-             for(var i=0, l=cur.length; i<l; i++)
-                 recurse(cur[i], prop ? prop+"."+i : ""+i);
-            if (l == 0)
-                result[prop] = [];
-        } else {
-            var isEmpty = true;
-            for (var p in cur) {
-                isEmpty = false;
-                recurse(cur[p], prop ? prop+"."+p : p);
-            }
-            if (isEmpty)
-                result[prop] = {};
-        }
-    }
-    recurse(data, "");
-    return result;
-}
-
-
-function myFunction() {
-    document.getElementById("myDropdown").classList.toggle("show");
-}
-
-window.onclick = function(event) {
-  if (!event.target.matches('.dropbtn')) {
-
-    var dropdowns = document.getElementsByClassName("dropdown-content");
-    var i;
-    for (i = 0; i < dropdowns.length; i++) {
-      var openDropdown = dropdowns[i];
-      if (openDropdown.classList.contains('show')) {
-        openDropdown.classList.remove('show');
-      }
-    }
-  }
-}
-
+/*
+ * Init/hide slective divs. Handle buttons and on-click events.
+ */
 $(document).ready(function() {
-    $('#phase2').hide();
     $('#loader').hide();
     $('#secondary').hide();
     $('#UpdateUploadKey').hide();
     $("#instruct2").hide();
     initDropbox();
+
     $("#file-picker").on("change", function() {
         handleFiles(this.files);
     });
@@ -386,10 +322,7 @@ $(document).ready(function() {
         e.preventDefault();
         doUpdate();
     });
-    $("#done-button").on("click", function(e) {
-        e.preventDefault();
-        window.location="/done";
-    });
+
     $("#upload-key").on("click", function(e) {
         goToUpdate();
     });

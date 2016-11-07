@@ -2,7 +2,7 @@ import re
 
 EMAIL_REGEX = re.compile(r"[^@\s]+@[^@\s]+\.[^@\s.]+$")
 GPA_REGEX = re.compile("^[0-9]\.[0-9]+$")
-Body = """\nThank you for entering BCNC database!\nIf the BCNC network find an opportunity that fits your qualifications, we will contact you\n\nIf you're information changes, or if you would like to update your entry, please save this key: """
+Body = """\nThank you for entering BCNC database!\nIf the BCNC network find an opportunity that fits your qualifications, we will contact you\n\nIf you're information changes, or if you would like to update your entry, please save this key:\n """
 def validateInput(email, gpa, year):
 	try:
 		if not EMAIL_REGEX.match(email):
